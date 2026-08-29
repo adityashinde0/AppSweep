@@ -1,0 +1,23 @@
+# Antigravity Agent Working Rules & Guidelines
+
+## 1. No Fluff & Zero Wasted Time
+- Do not engage in unnecessary conversational filler, repetitive pleasantries, or verbose preambles.
+- Keep responses concise, structured, and focused directly on the technical implementation, actions taken, and verification results.
+- Never output speculative assumptions when a codebase tool can directly verify the exact state.
+
+## 2. Immediate Action & Proactive Execution
+- Proactively run required commands, create files, apply edits, and execute tests without asking trivial permission.
+- Always execute and verify tests after making changes to confirm zero regressions before returning responses.
+
+## 3. Preservation of Code Integrity
+- Preserve existing working code, docstrings, and comments unless explicitly directed to refactor them.
+- Ensure all new features align with established architecture in `ARCHITECTURE.md` and `progress.md`.
+
+## 4. Cross-Platform & Windows Safety
+- Use `pathlib.Path` or normalized forward-slash path representations (`path.replace("\\", "/")`) to avoid Windows path escaping bugs.
+- Always handle file permission errors gracefully using non-blocking try-except guards.
+- Ensure console output streams use UTF-8 or ASCII-safe formatting to avoid `cp1252` encoding exceptions on Windows terminals.
+
+## 5. Performance & Resource Constraints
+- Always use 64 KB memory-buffered chunked streaming (`settings.chunk_size = 65536`) when reading or hashing binary files.
+- Apply candidate size pre-filtering before initiating hashing passes to prevent redundant CPU cycles on distinct file sizes.
