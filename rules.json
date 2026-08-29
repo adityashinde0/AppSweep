@@ -1,0 +1,100 @@
+{
+  "rules": [
+    {
+      "category": "Development",
+      "description": "Programming languages, scripts, SDKs, IDEs, and developer tools",
+      "extensions": [
+        ".py", ".pyw", ".ipynb", ".java", ".c", ".cpp", ".h", ".hpp",
+        ".cs", ".rs", ".go", ".js", ".mjs", ".cjs", ".ts", ".tsx",
+        ".jsx", ".sh", ".bash", ".ps1", ".bat", ".cmd", ".rb", ".php",
+        ".swift", ".kt", ".gradle", ".json", ".yaml", ".yml", ".toml",
+        ".xml", ".sql"
+      ],
+      "keywords": [
+        "code", "coding", "dev", "developer", "development", "vscode", "sdk",
+        "compiler", "node", "python", "git", "cargo", "maven", "gradle",
+        "docker", "npm", "yarn", "pip", "debug", "debugger", "server", "api",
+        "ide", "interpreter", "build"
+      ],
+      "path_patterns": [
+        "*/src/*", "*/source/*", "*/dev/*", "*/build/*", "*/node_modules/*",
+        "*/venv/*", "*/env/*", "*/.git/*", "*/bin/*", "*/lib/*", "*/scripts/*"
+      ]
+    },
+    {
+      "category": "Media & Graphics",
+      "description": "Audio, video, image, 3D modeling, and creative media files",
+      "extensions": [
+        ".mp4", ".mkv", ".avi", ".mov", ".wmv", ".flv", ".webm",
+        ".mp3", ".wav", ".flac", ".aac", ".ogg", ".m4a",
+        ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".svg", ".webp",
+        ".psd", ".ai", ".blend", ".fbx", ".obj", ".3ds"
+      ],
+      "keywords": [
+        "media", "audio", "video", "music", "sound", "photo", "image",
+        "graphics", "vlc", "ffmpeg", "encoder", "decoder", "blender",
+        "photoshop", "gimp", "player", "recorder", "render", "camera",
+        "stream", "track"
+      ],
+      "path_patterns": [
+        "*/media/*", "*/music/*", "*/video/*", "*/pictures/*", "*/images/*",
+        "*/assets/*", "*/audio/*", "*/photos/*"
+      ]
+    },
+    {
+      "category": "Games & Entertainment",
+      "description": "Game binaries, assets, emulators, and gaming launchers",
+      "extensions": [
+        ".rom", ".nes", ".sfc", ".gba", ".nds", ".unity3d", ".pak",
+        ".wad", ".sav", ".gam"
+      ],
+      "keywords": [
+        "game", "games", "gaming", "steam", "epic", "unity", "unreal",
+        "play", "arcade", "rpg", "fps", "emulator", "retro", "minecraft",
+        "roblox", "launcher", "quest"
+      ],
+      "path_patterns": [
+        "*/games/*", "*/steamapps/*", "*/emulators/*", "*/roms/*", "*/game_saves/*"
+      ]
+    },
+    {
+      "category": "Documents & Productivity",
+      "description": "Office documents, spreadsheets, presentations, and publications",
+      "extensions": [
+        ".pdf", ".docx", ".doc", ".xlsx", ".xls", ".pptx", ".ppt",
+        ".odt", ".ods", ".odp", ".txt", ".rtf", ".csv", ".tsv",
+        ".md", ".epub"
+      ],
+      "keywords": [
+        "doc", "docs", "document", "documents", "sheet", "sheets", "calc",
+        "presentation", "report", "reports", "invoice", "resume", "office",
+        "word", "excel", "powerpoint", "notes", "manual", "guide", "paper",
+        "summary", "contract"
+      ],
+      "path_patterns": [
+        "*/documents/*", "*/docs/*", "*/reports/*", "*/sheets/*", "*/notes/*",
+        "*/office/*", "*/papers/*"
+      ]
+    },
+    {
+      "category": "Utilities & Tools",
+      "description": "Executables, installers, archives, drivers, and system maintenance utilities",
+      "extensions": [
+        ".exe", ".msi", ".dmg", ".pkg", ".appimage", ".deb", ".rpm",
+        ".zip", ".tar", ".gz", ".7z", ".rar", ".iso", ".bin",
+        ".dll", ".so", ".dylib", ".cfg", ".ini", ".log", ".sys"
+      ],
+      "keywords": [
+        "util", "utility", "utilities", "tool", "tools", "installer",
+        "setup", "patch", "driver", "drivers", "archiver", "zip",
+        "backup", "cleaner", "monitor", "terminal", "powershell",
+        "sysinternals", "registry", "service", "manager", "agent",
+        "helper", "daemon", "updater"
+      ],
+      "path_patterns": [
+        "*/tools/*", "*/utils/*", "*/utilities/*", "*/drivers/*", "*/installer/*",
+        "*/downloads/*", "*/system/*", "*/bin/*", "*/setup/*"
+      ]
+    }
+  ]
+}
