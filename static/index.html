@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JP-001 Duplicate Application Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">📦</div>
+      <div class="brand-title">
+        <h1>JP-001 Application Manager</h1>
+        <p>Content-Fingerprint Duplicate Detection & Quarantine</p>
+      </div>
+    </div>
+
+    <nav class="nav-tabs">
+      <button class="nav-btn active" data-view="dashboard">📊 Dashboard</button>
+      <button class="nav-btn" data-view="duplicates">🔍 Duplicate Review</button>
+      <button class="nav-btn" data-view="applications">📁 Applications</button>
+      <button class="nav-btn" data-view="quarantine">🛡️ Quarantine</button>
+      <button class="nav-btn" data-view="rules">⚙️ Rules</button>
+      <button class="nav-btn" data-view="audit">📜 Audit Log</button>
+    </nav>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="container">
+
+    <!-- ================================================================= -->
+    <!-- 1. DASHBOARD VIEW -->
+    <!-- ================================================================= -->
+    <section id="view-dashboard" class="view-section active">
+      <div class="section-header">
+        <div>
+          <h2>System Overview</h2>
+          <p>Real-time application metrics, duplicate analysis, and quick scan controls.</p>
+        </div>
+        <button class="btn btn-primary" onclick="openScanModal()">🚀 Start New Scan</button>
+      </div>
+
+      <!-- KPI Grid -->
+      <div class="kpi-grid">
+        <div class="kpi-card info">
+          <div class="kpi-title">Total Applications</div>
+          <div class="kpi-value" id="kpi-total-apps">0</div>
+          <div class="kpi-subtitle" id="kpi-total-scanned-size">0 B scanned</div>
+        </div>
+
+        <div class="kpi-card warning">
+          <div class="kpi-title">Duplicate Groups</div>
+          <div class="kpi-value" id="kpi-dup-groups">0</div>
+          <div class="kpi-subtitle" id="kpi-dup-instances">0 duplicate copies</div>
+        </div>
+
+        <div class="kpi-card danger">
+          <div class="kpi-title">Reclaimable Space</div>
+          <div class="kpi-value" id="kpi-reclaimable-space">0 B</div>
+          <div class="kpi-subtitle">Redundant disk waste</div>
+        </div>
+
+        <div class="kpi-card success">
+          <div class="kpi-title">Quarantined Apps</div>
+          <div class="kpi-value" id="kpi-quarantined-count">0</div>
+          <div class="kpi-subtitle">Safely isolated from disk</div>
+        </div>
+      </div>
+
+      <!-- Active / Recent Scan Panel -->
+      <div class="glass-panel" id="scan-monitor-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="font-size: 1.1rem;">Latest Scan Status</h3>
+          <span class="badge badge-dev" id="latest-scan-status">IDLE</span>
+        </div>
+
+        <div id="active-scan-body">
+          <p style="color: var(--text-muted); font-size: 0.875rem;" id="latest-scan-details">No scans recorded yet. Click "Start New Scan" to discover duplicates.</p>
+          <div class="progress-bar-container" id="scan-progress-bar-container" style="display: none;">
+            <div class="progress-bar-fill" id="scan-progress-bar-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Breakdown Overview -->
+      <div class="glass-panel">
+        <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Category Distribution</h3>
+        <div class="table-responsive">
+          <table class="data-table" id="dashboard-category-table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Applications</th>
+                <th>Total Size</th>
+                <th>Duplicates</th>
+                <th>Waste Space</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No scan data available.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 2. DUPLICATE REVIEW VIEW -->
+    <!-- ================================================================= -->
+    <section id="view-duplicates" class="view-section">
+      <div class="section-header">
+        <div>
+          <h2>Duplicate Applications Review</h2>
+          <p>Grouped by cryptographic content fingerprint. Inspect side-by-side evidence before safe quarantine.</p>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="loadDuplicates()">🔄 Refresh</button>
+      </div>
+
+      <div id="duplicate-groups-container">
+        <!-- Rendered dynamically -->
+        <p style="color: var(--text-muted);">Loading duplicate groups...</p>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 3. APPLICATIONS CATALOG VIEW -->
+    <!-- ================================================================= -->
+    <section id="view-applications" class="view-section">
+      <div class="section-header">
+        <div>
+          <h2>Application Catalog</h2>
+          <p>Explore all discovered standalone binaries and packages.</p>
+        </div>
+      </div>
+
+      <div class="glass-panel" style="padding: 1rem 1.25rem;">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <input type="text" id="app-search-input" placeholder="Search by name or path..." style="flex: 2; min-width: 200px;" oninput="debounceAppSearch()">
+          <select id="app-category-filter" style="flex: 1; min-width: 150px;" onchange="loadApplications()">
+            <option value="">All Categories</option>
+            <option value="Development">Development</option>
+            <option value="Media & Graphics">Media & Graphics</option>
+            <option value="Games & Entertainment">Games & Entertainment</option>
+            <option value="Documents & Productivity">Documents & Productivity</option>
+            <option value="Utilities & Tools">Utilities & Tools</option>
+            <option value="Uncategorized">Uncategorized</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="glass-panel">
+        <div class="table-responsive">
+          <table class="data-table" id="applications-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Path</th>
+                <th>Size</th>
+                <th>Files</th>
+                <th>Content Fingerprint</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Loading applications...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 4. QUARANTINE & RESTORATIONS VIEW -->
+    <!-- ================================================================= -->
+    <section id="view-quarantine" class="view-section">
+      <div class="section-header">
+        <div>
+          <h2>Quarantine Storage</h2>
+          <p>Safely isolated applications. Restore files back to original paths anytime.</p>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="loadQuarantine()">🔄 Refresh</button>
+      </div>
+
+      <div class="glass-panel">
+        <div class="table-responsive">
+          <table class="data-table" id="quarantine-table">
+            <thead>
+              <tr>
+                <th>Original Path</th>
+                <th>Quarantine Location</th>
+                <th>Status</th>
+                <th>Date Quarantined</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No quarantined items found.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 5. RULES MANAGEMENT VIEW -->
+    <!-- ================================================================= -->
+    <section id="view-rules" class="view-section">
+      <div class="section-header">
+        <div>
+          <h2>Categorization Rules</h2>
+          <p>Configure dynamic rules for automatic application categorization.</p>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openNewRuleModal()">+ Add New Rule</button>
+      </div>
+
+      <div class="glass-panel">
+        <div class="table-responsive">
+          <table class="data-table" id="rules-table">
+            <thead>
+              <tr>
+                <th>Priority</th>
+                <th>Name</th>
+                <th>Target Category</th>
+                <th>Conditions</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Loading rules...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 6. AUDIT LOG VIEW -->
+    <!-- ================================================================= -->
+    <section id="view-audit" class="view-section">
+      <div class="section-header">
+        <div>
+          <h2>System Audit Trail</h2>
+          <p>Immutable log of scans, categorizations, quarantine operations, and rule edits.</p>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="loadAuditLogs()">🔄 Refresh</button>
+      </div>
+
+      <div class="glass-panel">
+        <div class="table-responsive">
+          <table class="data-table" id="audit-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Action</th>
+                <th>Entity Type</th>
+                <th>Entity ID</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Loading audit logs...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================================================================= -->
+  <!-- MODALS -->
+  <!-- ================================================================= -->
+
+  <!-- Start Scan Modal -->
+  <div class="modal-overlay" id="modal-scan">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Launch Application Scan</h3>
+        <button class="modal-close" onclick="closeModal('modal-scan')">&times;</button>
+      </div>
+      <form id="form-start-scan" onsubmit="handleStartScan(event)">
+        <div class="form-group">
+          <label for="scan-root-paths">Scan Root Directories (One path per line)</label>
+          <textarea id="scan-root-paths" rows="4" placeholder="./demo_sandbox&#10;C:/Users/Tulsi.Y.Kumbhar/MyProj/test_sandbox" required></textarea>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Directories will be scanned recursively using 64 KB memory-buffered SHA-256 streaming.</p>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-scan')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Start Scan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Quarantine Confirmation Modal -->
+  <div class="modal-overlay" id="modal-quarantine-confirm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>🛡️ Confirm Application Quarantine</h3>
+        <button class="modal-close" onclick="closeModal('modal-quarantine-confirm')">&times;</button>
+      </div>
+      <div id="quarantine-preview-body">
+        <p style="color: var(--text-muted);">Loading preview...</p>
+      </div>
+      <div style="margin: 1.25rem 0;">
+        <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; cursor: pointer;">
+          <input type="checkbox" id="quarantine-confirm-checkbox" style="width: 18px; height: 18px;">
+          <span>I understand this application will be moved to quarantine storage.</span>
+        </label>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-quarantine-confirm')">Cancel</button>
+        <button type="button" class="btn btn-danger" id="btn-execute-quarantine" disabled onclick="executeQuarantineConfirmed()">Move to Quarantine</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rule Create / Edit Modal -->
+  <div class="modal-overlay" id="modal-rule">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="rule-modal-title">Add Categorization Rule</h3>
+        <button class="modal-close" onclick="closeModal('modal-rule')">&times;</button>
+      </div>
+      <form id="form-rule" onsubmit="handleSaveRule(event)">
+        <input type="hidden" id="rule-id">
+        <div class="form-group">
+          <label for="rule-name">Rule Name</label>
+          <input type="text" id="rule-name" placeholder="e.g. Python Scripts & Binaries" required>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label for="rule-category">Target Category</label>
+            <input type="text" id="rule-category" placeholder="e.g. Development" required>
+          </div>
+          <div class="form-group">
+            <label for="rule-priority">Priority (Lower runs first)</label>
+            <input type="number" id="rule-priority" value="50" min="1" max="1000" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="rule-extensions">File Extensions (comma-separated)</label>
+          <input type="text" id="rule-extensions" placeholder=".py, .exe, .bin">
+        </div>
+        <div class="form-group">
+          <label for="rule-keywords">Keywords (comma-separated)</label>
+          <input type="text" id="rule-keywords" placeholder="compiler, python, ffmpeg">
+        </div>
+        <div class="form-group">
+          <label for="rule-patterns">Path Patterns (comma-separated globs)</label>
+          <input type="text" id="rule-patterns" placeholder="*/src/*, */bin/*">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-rule')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Rule</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
