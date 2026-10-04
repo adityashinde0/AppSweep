@@ -27,7 +27,7 @@ This document tracks the project state, completed architecture, codebase directo
 ## 📁 Codebase Directory Structure & Map
 
 ```
-c:\Users\Tulsi.Y.Kumbhar\MyProj\
+AppSweep/
 ├── api/
 │   ├── routers/
 │   │   ├── apps.py            # GET /api/apps, GET /api/apps/{id}
@@ -64,6 +64,8 @@ c:\Users\Tulsi.Y.Kumbhar\MyProj\
 ├── seed_demo.py               # Demo sandbox generator (simulates duplicates for judges)
 ├── test_api.py                # Integration test suite for REST API & Services (7 tests)
 ├── test_app.py                # Unit test suite for CLI Engine (30 tests)
+├── requirements.txt           # Python package requirements
+├── README.md                  # Project overview, setup guide, and documentation
 ├── ARCHITECTURE.md            # System architecture and schema design document
 ├── PRD.md                     # Product requirements document
 └── progress.md                # (This file) Project status and context handover document
